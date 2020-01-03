@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"io/ioutil"
 	"mingi/goyoma/database/models"
 	"mingi/goyoma/lib/common"
@@ -55,9 +56,9 @@ func register(c *gin.Context) {
 		UFName   string  `json:"UFName" binding:"required"`
 		ULName   string  `json:"ULName" binding:"required"`
 		Mobile   string  `json:"Mobile" binding:"required"`
-		Height   float32 `json:"Height" binding:"required"`
-		Weight   float32 `json:"Weight" binding:"required"`
-		Age      int     `json:"Age" binding:"required"`
+		Height   float64 `json:"Height" binding:"required"`
+		Weight   float64 `json:"Weight" binding:"required"`
+		Age      float64 `json:"Age" binding:"required"`
 		Gender   string  `json:"Gender" binding:"required"`
 		UType    string  `json:"UType" binding:"required"`
 	}
@@ -143,4 +144,36 @@ func login(c *gin.Context) {
 		"token": token,
 	})
 
+}
+
+// check API will renew token when token life is less than 3 days, otherwise, return null for token
+func check(c *gin.Context) {
+	userRaw, ok := c.Get("user")
+	if !ok {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	user := userRaw.(User)
+
+	tokenExpire := int64(c.MustGet("token_expire").(float64))
+	now := time.Now().Unix()
+	diff := tokenExpire - now
+
+	fmt.Println(diff)
+	if diff < 60*60*24*3 {
+		// renew token
+		token, _ := generateToken(user.Serialize())
+		c.SetCookie("token", token, 60*60*24*7, "/", "", false, true)
+		c.JSON(200, common.JSON{
+			"token": token,
+			"user":  user.Serialize(),
+		})
+		return
+	}
+
+	c.JSON(200, common.JSON{
+		"token": nil,
+		"user":  user.Serialize(),
+	})
 }

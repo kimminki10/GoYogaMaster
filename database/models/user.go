@@ -14,9 +14,9 @@ type User struct {
 	UFName       string
 	ULName       string
 	Mobile       string
-	Height       float32
-	Weight       float32
-	Age          int
+	Height       float64
+	Weight       float64
+	Age          float64
 	Gender       string
 
 	UType string
@@ -46,9 +46,9 @@ func (u *User) Read(m common.JSON) {
 	u.UFName = m["u_f_name"].(string)
 	u.ULName = m["u_l_name"].(string)
 	u.Mobile = m["mobile"].(string)
-	u.Height = m["height"].(float32)
-	u.Weight = m["weight"].(float32)
-	u.Age = m["age"].(int)
+	u.Height = m["height"].(float64)
+	u.Weight = m["weight"].(float64)
+	u.Age = m["age"].(float64)
 	u.Gender = m["gender"].(string)
 	u.UType = m["u_type"].(string)
 }
