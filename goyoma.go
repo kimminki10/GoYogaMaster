@@ -1,6 +1,7 @@
 package main
 
 import (
+	"mingi/goyoma/api"
 	"mingi/goyoma/database"
 	"mingi/goyoma/lib/middlewares"
 	"os"
@@ -20,6 +21,6 @@ func main() {
 	app := gin.Default()
 	app.Use(database.Inject(db))
 	app.Use(middlewares.JWTMiddleware())
-	app.ApplyRoutes(app)
+	api.ApplyRoutes(app)
 	app.Run(":" + port)
 }

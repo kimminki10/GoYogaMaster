@@ -50,15 +50,16 @@ func generateToken(data common.JSON) (string, error) {
 func register(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	type RequestBody struct {
-		Email    string `json:"email" binding:"required"`
-		Password string `json:"password" binding:"required"`
-		UFName   string
-		ULName   string
-		Mobile   string
-		Height   float32
-		Weight   float32
-		Age      int
-		Gender   string
+		Email    string  `json:"email" binding:"required"`
+		Password string  `json:"password" binding:"required"`
+		UFName   string  `json:"UFName" binding:"required"`
+		ULName   string  `json:"ULName" binding:"required"`
+		Mobile   string  `json:"Mobile" binding:"required"`
+		Height   float32 `json:"Height" binding:"required"`
+		Weight   float32 `json:"Weight" binding:"required"`
+		Age      int     `json:"Age" binding:"required"`
+		Gender   string  `json:"Gender" binding:"required"`
+		UType    string  `json:"UType" binding:"required"`
 	}
 
 	var body RequestBody
@@ -90,6 +91,7 @@ func register(c *gin.Context) {
 		Weight:       body.Weight,
 		Age:          body.Age,
 		Gender:       body.Gender,
+		UType:        body.UType,
 		PasswordHash: hash,
 	}
 
@@ -104,4 +106,41 @@ func register(c *gin.Context) {
 		"user":  user.Serialize(),
 		"token": token,
 	})
+}
+
+func login(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+	type RequestBody struct {
+		Email    string `json:"email" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+
+	var body RequestBody
+	if err := c.BindJSON(&body); err != nil {
+		c.AbortWithStatus(400)
+		return
+	}
+
+	// check existancy
+	var user User
+	if err := db.Where("email = ?", body.Email).First(&user).Error; err != nil {
+		c.AbortWithStatus(404) // user not found
+		return
+	}
+
+	if !checkHash(body.Password, user.PasswordHash) {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	serialized := user.Serialize()
+	token, _ := generateToken(serialized)
+
+	c.SetCookie("token", token, 60*60*24*7, "/", "", false, true)
+
+	c.JSON(200, common.JSON{
+		"user":  user.Serialize(),
+		"token": token,
+	})
+
 }

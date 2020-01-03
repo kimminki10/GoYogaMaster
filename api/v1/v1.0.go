@@ -1,10 +1,10 @@
 package apiv1
 
 import (
+	"mingi/goyoma/api/v1/auth"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/velopert/gin-rest-api-sample/api/v1.0/auth"
 )
 
 func ping(c *gin.Context) {

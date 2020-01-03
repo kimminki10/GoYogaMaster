@@ -1,6 +1,10 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	apiv1 "mingi/goyoma/api/v1"
+
+	"github.com/gin-gonic/gin"
+)
 
 func ApplyRoutes(r *gin.Engine) {
 	api := r.Group("/api")
