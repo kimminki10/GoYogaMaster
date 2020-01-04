@@ -2,6 +2,8 @@ package apiv1
 
 import (
 	"mingi/goyoma/api/v1/auth"
+	"mingi/goyoma/api/v1/contents"
+	"mingi/goyoma/api/v1/poses"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,5 +21,7 @@ func ApplyRoutes(r *gin.RouterGroup) {
 	{
 		v1.GET("/ping", ping)
 		auth.ApplyRoutes(v1)
+		poses.ApplyRoutes(v1)
+		contents.ApplyRoutes(v1)
 	}
 }

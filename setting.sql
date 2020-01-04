@@ -66,18 +66,18 @@ create table contents(
 
 alter table contents
     add column email varchar(1024),
-    add constraint contetns_user
+    add constraint contents_user
     FOREIGN KEY(email) REFERENCES user(email)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
 
-    add column c_name varchar(1024),
-    add column c_description varchar(4096),
-    add column durations float,
-    add column category varchar(256),
+    add column c_name          varchar(1024),
+    add column c_description   varchar(4096),
+    add column durations       float,
+    add column category        varchar(256),
     add column c_thumbnail_url varchar(4096),
-    add column c_view_num int,
-    add column c_status varchar(16),
+    add column c_view_num      int,
+    add column c_status        varchar(16),
     
     ADD COLUMN poselist_id int,
     add constraint contents_poselist
