@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
@@ -110,6 +111,7 @@ func register(c *gin.Context) {
 }
 
 func login(c *gin.Context) {
+	session := sessions.Default(c) // redis session
 	db := c.MustGet("db").(*gorm.DB)
 	type RequestBody struct {
 		Email    string `json:"email" binding:"required"`
@@ -138,6 +140,9 @@ func login(c *gin.Context) {
 	token, _ := generateToken(serialized)
 
 	c.SetCookie("token", token, 60*60*24*7, "/", "", false, true)
+
+	session.Set(user.Email, token)
+	session.Save()
 
 	c.JSON(200, common.JSON{
 		"user":  user.Serialize(),
